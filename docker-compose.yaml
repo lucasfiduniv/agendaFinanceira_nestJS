@@ -1,0 +1,46 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: AgendaFinanceira
+    environment:
+      POSTGRES_USER: lucas
+      POSTGRES_PASSWORD: 258456
+      POSTGRES_DB: AgendaFinanceira
+    ports:
+      - "5438:5432"
+    networks:
+      - app-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin-AgendaFinanceira
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: 258456
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  nest-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
