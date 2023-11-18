@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
@@ -39,5 +39,22 @@ export class UserService {
     user.senha = hashedPassword;
 
     return await this.userRepository.save(user);
+  }
+
+  async getUsers(): Promise<User[]> {
+    const getAllUsers = await this.userRepository.find();
+    return getAllUsers;
+  }
+
+  async getOneUser(userId: string): Promise<User> {
+    const getOneUser = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+  
+    if (!getOneUser) {
+      throw new NotFoundException(`Usuário com o ID ${userId} não encontrado`);
+    }
+  
+    return getOneUser;
   }
 }
