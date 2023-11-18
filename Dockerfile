@@ -1,5 +1,5 @@
 # Use the official Node.js image as base
-FROM node:14
+FROM node:18
 
 # Set the working directory
 WORKDIR /app
@@ -8,10 +8,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --quiet
 
 # Copy the entire project to the working directory
 COPY . .
+
+# Build the project
+RUN npm run build
 
 # Expose the port on which your Nest.js app is running
 EXPOSE 3000
