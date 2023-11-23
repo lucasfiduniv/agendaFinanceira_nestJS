@@ -4,6 +4,7 @@ import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/createUserDto';
 import * as bcrypt from 'bcrypt';
+import { UpdatePhone } from './dto/updatePhone';
 
 @Injectable()
 export class UserService {
@@ -29,7 +30,7 @@ export class UserService {
       throw new BadRequestException('O e-mail já está em uso.');
     }
 
-    // Criptografe a senha antes de armazená-la no banco de dados
+   // Criptografe a senha antes de armazená -la no banco de dados
     const saltRounds = 10; // Número de rounds para o algoritmo de hash
     const hashedPassword = await bcrypt.hash(createUserDto.senha, saltRounds);
 
@@ -56,5 +57,16 @@ export class UserService {
     }
   
     return getOneUser;
+  }
+  async updatePhoneNumber(updatePhone:UpdatePhone, userId:string){
+   await this.userRepository.findOneOrFail({where:{id:userId}})
+    const user = User[userId];
+    console.log(user)
+    user.phone = updatePhone
+    const teste = await this.userRepository.update(userId, user);
+ console.log(teste)
+   
+
+
   }
 }

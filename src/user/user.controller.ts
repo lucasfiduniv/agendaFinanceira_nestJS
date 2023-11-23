@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/createUserDto';
+import { UpdatePhone } from './dto/updatePhone';
 
 @Controller('users')
 export class UserController {
@@ -9,7 +10,6 @@ export class UserController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.createUser(createUserDto);
-    console.log("bateu aqui")
     if (user.senha) {
       delete user.senha;
     }
@@ -24,5 +24,10 @@ export class UserController {
   async getUserById(@Param('id') userId: string) {
     const getOneUser = await this.userService.getOneUser(userId);
     return getOneUser;
+  }
+  @Patch('updatePhone/:id')
+    async UpdatePhone(@Param('id') userId: string, @Body() updatePhone: UpdatePhone) {
+      const updateNumberPhone = await this.userService.updatePhoneNumber(updatePhone,userId);
+    
   }
 }
