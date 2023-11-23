@@ -26,8 +26,14 @@ export class UserController {
     return getOneUser;
   }
   @Patch('updatePhone/:id')
-    async UpdatePhone(@Param('id') userId: string, @Body() updatePhone: UpdatePhone) {
-      const updateNumberPhone = await this.userService.updatePhoneNumber(updatePhone,userId);
-    
+  async UpdatePhone(
+    @Param('id') userId: string,
+    @Body() updatePhone: UpdatePhone,
+  ) {
+    const updateNumberPhone = await this.userService.updatePhoneNumber(
+      updatePhone,
+      userId,
+    );
+    return updateNumberPhone;
   }
 }
