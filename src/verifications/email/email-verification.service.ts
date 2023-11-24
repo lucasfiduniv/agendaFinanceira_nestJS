@@ -4,6 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MailerService } from '@nestjs-modules/mailer';
 import { SendEmailDto } from './dto/emailVerification.dto';
 import { User } from 'src/user/entity/user.entity';
+import { SendEmailValidacaoDto } from './dto/emailValidacao.dto';
+import { error } from 'console';
 
 @Injectable()
 export class EmailVerificationService {
@@ -34,7 +36,7 @@ export class EmailVerificationService {
       await this.userRepository.save(user);
 
       await this.mailerService.sendMail({
-        to: 'lucfiduniv@gmail.com',
+        to: sendEmailDto.email,
         from: 'lucasfiduniv22222222@gmail.com',
         subject: 'Testing',
         text: `Seu código de verificação: ${code}`,
@@ -43,6 +45,42 @@ export class EmailVerificationService {
     } catch (error) {
       console.error(error);
       throw new NotFoundException('Usuário não encontrado');
+    }
+  }
+  async sendValidationCode(sendEmailValidacaoDto: SendEmailValidacaoDto): Promise<boolean> {
+    try {
+      const user = await this.userRepository.findOneOrFail({
+        where: { id: sendEmailValidacaoDto.id },
+      });
+
+      const userr =  await this.userRepository.findOne({where:{id: sendEmailValidacaoDto.id}})
+
+      if (user.codeValityNumber === sendEmailValidacaoDto.code) {
+        user.emailVality = true;
+        const updateUser = {
+          emailVality: true
+        }
+        await this.userRepository.update(sendEmailValidacaoDto.id, updateUser);
+       
+      await this.userRepository
+       .createQueryBuilder()
+       .update(User)
+       .set({ codeValityNumber: null })   
+       .where("id = :id", { id: sendEmailValidacaoDto.id })
+       .execute();
+   
+ // await this.userRepository.query(`UPDATE user SET codeValityNumber = ${null} WHERE public.user.id = ${sendEmailValidacaoDto.id}`)
+        return true;
+      } else {
+        throw new NotFoundException('Código inválido');
+      } 
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        console.error(error);
+        throw new NotFoundException('Usuário não encontrado');
+      }
     }
   }
 }

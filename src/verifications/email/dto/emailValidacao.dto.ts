@@ -1,7 +1,6 @@
 import { IsPhoneNumber } from 'class-validator';
 
-export class SendEmailDto {
-
-  email: string;
+export class SendEmailValidacaoDto {
+  code: string;
   id:string;
 }
