@@ -35,4 +35,7 @@ export class User extends BaseEntity {
 
   @Column({ nullable: true })
   phoneVality: boolean;
+
+  @Column({ nullable: true })
+  codeValityNumber: string;
 }
