@@ -1,14 +1,18 @@
-// email.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
-import { SendEmailDto } from './dto/emailVerification.dto';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MailerService } from '@nestjs-modules/mailer';
+import { SendEmailDto } from './dto/emailVerification.dto';
 import { User } from 'src/user/entity/user.entity';
 
 @Injectable()
 export class EmailVerificationService {
-  private transporter;
-  private readonly userRepository:Repository<User>
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    private readonly mailerService: MailerService,
+  ) {}
+
   private generateRandomDigits(length: number): string {
     const digits = [];
     for (let i = 0; i < length; i++) {
@@ -17,35 +21,26 @@ export class EmailVerificationService {
     return digits.join('');
   }
 
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'lucasfidunivteste@gmail.com',
-        pass: '258456ek',
-      },
-    });
-  }
-
-  async sendVerificationCode(sendEmailDto:SendEmailDto): Promise<void> {
+  async sendVerificationCode(sendEmailDto: SendEmailDto): Promise<void> {
     const verificationCode = this.generateRandomDigits(5);
     const code = verificationCode;
+
     try {
       const user = await this.userRepository.findOneOrFail({
         where: { id: sendEmailDto.id },
       });
+
       user.codeValityNumber = code;
       await this.userRepository.save(user);
-   
-    const mailOptions = {
-      from: 'lucasfidunivteste@gmail.com',
-      to: sendEmailDto.email,
-      subject: 'Código de Verificação',
-      text: `Seu código de verificação: ${code}`,
-    };
 
-    await this.transporter.sendMail(mailOptions);
-     } catch (error) {
+      await this.mailerService.sendMail({
+        to: 'lucfiduniv@gmail.com',
+        from: 'lucasfiduniv22222222@gmail.com',
+        subject: 'Testing',
+        text: `Seu código de verificação: ${code}`,
+        html: `<p>Seu código de verificação: <strong>${code}</strong></p>`,
+      });
+    } catch (error) {
       console.error(error);
       throw new NotFoundException('Usuário não encontrado');
     }
