@@ -1,4 +1,5 @@
-import { IsPhoneNumber } from 'class-validator';
+
+import { Module } from '@nestjs/common';
 
 export class SendEmailValidacaoDto {
   code: string;

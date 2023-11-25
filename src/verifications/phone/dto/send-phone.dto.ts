@@ -4,5 +4,5 @@ export class SendPhoneDto {
   @IsPhoneNumber('BR')
   phoneNumber: string;
 
-  id:string;
+  id: string;
 }

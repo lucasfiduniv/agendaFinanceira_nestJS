@@ -29,7 +29,6 @@ export class UserService {
     if (existingUser) {
       throw new BadRequestException('O nome de usuário já está em uso.');
     }
-
     if (existingEmail) {
       throw new BadRequestException('O e-mail já está em uso.');
     }
@@ -73,7 +72,6 @@ export class UserService {
       user.phone = updatePhone.updatePhone;
 
       const updatedUser = await this.userRepository.save(user);
-      console.log(updatedUser);
 
       return updatedUser;
     } catch (error) {
