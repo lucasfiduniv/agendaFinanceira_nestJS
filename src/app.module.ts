@@ -6,7 +6,8 @@ import { PhoneVerificationModule } from './verifications/phone/phone-verificatio
 import { User } from './user/entity/user.entity';
 import { EmailVerificationModule } from './verifications/email/email-verification.module';
 import { AuthEmailModule } from './auth/authEmail/authEmail.module';
-import { JwtMiddleware } from './auth/authEmail/guard/jwt.middleware';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -17,15 +18,17 @@ import { JwtMiddleware } from './auth/authEmail/guard/jwt.middleware';
       synchronize: true,
       ssl: { rejectUnauthorized: false },
     }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: 'your-secret-key', 
+      signOptions: { expiresIn: '1h' },
+    }),
+
     UserModule,
     PhoneVerificationModule,
     EmailVerificationModule,
-    AuthEmailModule
+    AuthEmailModule,
+  
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    // Use o middleware global em todas as rotas
-    consumer.apply(JwtMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}

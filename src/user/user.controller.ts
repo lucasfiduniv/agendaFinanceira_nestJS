@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/createUserDto';
 import { UpdatePhone } from './dto/updatePhone';
-import { ProtegerRota } from 'src/auth/authEmail/guard/proteger-rota.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { userId } from 'src/decorators/user-id.decorator';
 
 @Controller('users')
 export class UserController {
@@ -16,14 +17,19 @@ export class UserController {
     }
     return user;
   }
-  @ProtegerRota() 
+  
+  
   @Get()
   async getUsers() {
     const getUsers = await this.userService.getUsers();
     return getUsers;
   }
-  @Get(':id')
-  async getUserById(@Param('id') userId: string) {
+  @Get('/myuser')
+  async getUserById(@userId() userId: string) {
+    if (!userId) {
+      throw new UnauthorizedException('Token inválido ou ausente');
+    }
+  
     const getOneUser = await this.userService.getOneUser(userId);
     return getOneUser;
   }

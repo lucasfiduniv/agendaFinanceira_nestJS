@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
@@ -15,6 +16,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -51,14 +53,18 @@ export class UserService {
   }
 
   async getOneUser(userId: string): Promise<User> {
+    if (!userId) {
+      throw new UnauthorizedException('ID do usuário inválido ou ausente');
+    }
+  
     const getOneUser = await this.userRepository.findOne({
       where: { id: userId },
     });
-
+  
     if (!getOneUser) {
       throw new NotFoundException(`Usuário com o ID ${userId} não encontrado`);
     }
-
+  
     return getOneUser;
   }
   async updatePhoneNumber(updatePhone: UpdatePhone, userId: string) {
