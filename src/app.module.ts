@@ -1,10 +1,12 @@
 // app.module.ts
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { PhoneVerificationModule } from './verifications/phone/phone-verification.module';
 import { User } from './user/entity/user.entity';
 import { EmailVerificationModule } from './verifications/email/email-verification.module';
+import { AuthEmailModule } from './auth/authEmail/authEmail.module';
+import { JwtMiddleware } from './auth/authEmail/guard/jwt.middleware';
 
 @Module({
   imports: [
@@ -17,7 +19,13 @@ import { EmailVerificationModule } from './verifications/email/email-verificatio
     }),
     UserModule,
     PhoneVerificationModule,
-    EmailVerificationModule
+    EmailVerificationModule,
+    AuthEmailModule
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Use o middleware global em todas as rotas
+    consumer.apply(JwtMiddleware).forRoutes('*');
+  }
+}

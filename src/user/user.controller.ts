@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/createUserDto';
 import { UpdatePhone } from './dto/updatePhone';
+import { ProtegerRota } from 'src/auth/authEmail/guard/proteger-rota.decorator';
 
 @Controller('users')
 export class UserController {
@@ -15,6 +16,7 @@ export class UserController {
     }
     return user;
   }
+  @ProtegerRota() 
   @Get()
   async getUsers() {
     const getUsers = await this.userService.getUsers();
