@@ -1,7 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { PhoneVerificationService } from './phone-verification.service';
 import { SendPhoneDto } from './dto/send-phone.dto';
 import { SendEmailValidacaoDto } from '../email/dto/emailValidacao.dto';
+import { Roles } from 'src/decorators/roles.decorator';
+import { UserType } from 'src/user/enum/user-type.enum';
+import { RolesGuard } from 'src/guards/roles.guard';
 
 @Controller('phone-verification')
 export class PhoneVerificationController {
@@ -9,6 +12,8 @@ export class PhoneVerificationController {
     private readonly phoneVerificationService: PhoneVerificationService,
   ) {}
 
+  @Roles(UserType.USER)
+  @UseGuards(RolesGuard)
   @Post('send-code/')
   async sendVerificationCode(@Body() sendPhoneDto: SendPhoneDto) {
     await this.phoneVerificationService.sendVerificationCode(sendPhoneDto);

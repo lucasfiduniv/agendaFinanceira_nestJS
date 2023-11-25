@@ -4,6 +4,8 @@ import { CreateUserDto } from './dto/createUserDto';
 import { UpdatePhone } from './dto/updatePhone';
 import { AuthGuard } from '@nestjs/passport';
 import { userId } from 'src/decorators/user-id.decorator';
+import { Roles } from 'src/decorators/roles.decorator';
+import { UserType } from './enum/user-type.enum';
 
 @Controller('users')
 export class UserController {
@@ -33,6 +35,7 @@ export class UserController {
     const getOneUser = await this.userService.getOneUser(userId);
     return getOneUser;
   }
+
   @Patch('updatePhone/:id')
   async UpdatePhone(
     @Param('id') userId: string,

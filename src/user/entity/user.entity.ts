@@ -1,11 +1,6 @@
 import { IsNotEmpty, IsPhoneNumber, Length } from 'class-validator';
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { UserType } from 'src/user/enum/user-type.enum';
 
 @Entity('user')
 @Unique(['email'])
@@ -38,4 +33,7 @@ export class User extends BaseEntity {
 
   @Column({ nullable: true })
   codeValityNumber: string;
+  
+  @Column({ type: 'enum', enum: UserType, default: UserType.USER })
+  role: UserType;
 }

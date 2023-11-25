@@ -42,9 +42,9 @@ export class AuthEmailService {
 
   async login(user: User): Promise<{ access_token: string }> {
     const jwtSecret = this.configService.get<string>('JWT_SECRET_KEY');
-    const payload = { userId: user.id, sub: user.id }; // Adiciona userId ao payload
+    const payload = { userId: user.id, sub: user.id, typeUser: user.role }; // Adicione typeUser ao payload
     const access_token = this.jwtService.sign(payload, { secret: jwtSecret });
-
+  
     return {
       access_token,
     };

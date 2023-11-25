@@ -8,6 +8,9 @@ import { EmailVerificationModule } from './verifications/email/email-verificatio
 import { AuthEmailModule } from './auth/authEmail/authEmail.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './guards/roles.guard';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -19,16 +22,23 @@ import { JwtModule } from '@nestjs/jwt';
       ssl: { rejectUnauthorized: false },
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secret: 'your-secret-key', 
-      signOptions: { expiresIn: '1h' },
+    ConfigModule.forRoot(),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET_KEY'),
+        signOptions: { expiresIn: '1h' },
+      }),
+      inject: [ConfigService],
     }),
-
+    TypeOrmModule.forFeature([User]),
     UserModule,
     PhoneVerificationModule,
     EmailVerificationModule,
     AuthEmailModule,
-  
+  ],
+  exports: [JwtModule],
+  providers: [
   ],
 })
 export class AppModule {}
