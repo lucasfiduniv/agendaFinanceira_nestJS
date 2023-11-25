@@ -16,7 +16,7 @@ export class PhoneVerificationService {
   ) {
     this.twilioClient = new Twilio(
       'AC3aebb5ebe3381645457a8c0de67718f9',
-      '7e2c758fdcb319583c3e95e8bc6a01ec',
+      '58bb46f0443719d5defd92658e02e734',
     );
   }
 
@@ -27,7 +27,6 @@ export class PhoneVerificationService {
     }
     return digits.join('');
   }
-
   async sendVerificationCode(sendPhoneDto: SendPhoneDto): Promise<void> {
     const verificationCode = this.generateRandomDigits(5);
 
@@ -37,7 +36,7 @@ export class PhoneVerificationService {
       });
 
       user.codeValityNumber = verificationCode;
-      await this.userRepository.save(user);
+     const salvar = await this.userRepository.save(user);
 
       await this.twilioClient.messages.create({
         body: `Seu código de verificação: ${verificationCode}`,
@@ -53,18 +52,14 @@ export class PhoneVerificationService {
     sendPhoneValidacaoDto: SendEmailValidacaoDto,
   ): Promise<boolean> {
     try {
-      const user = await this.userRepository.findOneOrFail({
-        where: { id: sendPhoneValidacaoDto.id },
-      });
-
-      const userr = await this.userRepository.findOne({
+      const user = await this.userRepository.findOne({
         where: { id: sendPhoneValidacaoDto.id },
       });
 
       if (user.codeValityNumber === sendPhoneValidacaoDto.code) {
-        user.emailVality = true;
+        user.phoneVality = true;
         const updateUser = {
-          emailVality: true,
+          phoneVality: true,
         };
         await this.userRepository.update(sendPhoneValidacaoDto.id, updateUser);
 

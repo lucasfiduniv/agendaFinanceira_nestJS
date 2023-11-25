@@ -11,7 +11,6 @@ export class PhoneVerificationController {
 
   @Post('send-code/')
   async sendVerificationCode(@Body() sendPhoneDto: SendPhoneDto) {
-    console.log(sendPhoneDto);
     await this.phoneVerificationService.sendVerificationCode(sendPhoneDto);
     return { message: 'Código enviado com sucesso.' };
   }
