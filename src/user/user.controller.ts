@@ -6,6 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { userId } from 'src/decorators/user-id.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { UserType } from './enum/user-type.enum';
+import { ReturnUserDto } from './dto/returnUserDto';
 
 @Controller('users')
 export class UserController {
@@ -17,7 +18,8 @@ export class UserController {
     if (user.senha) {
       delete user.senha;
     }
-    return user;
+    const returnUser = new ReturnUserDto(user);
+    return returnUser;
   }
   
   
@@ -33,7 +35,8 @@ export class UserController {
     }
   
     const getOneUser = await this.userService.getOneUser(userId);
-    return getOneUser;
+    const returnUser = new ReturnUserDto(getOneUser);
+    return returnUser;
   }
 
   @Patch('updatePhone/:id')
